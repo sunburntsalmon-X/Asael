@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Asael, the Korean Companion - 阿塞尔</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Serif+SC:wght@300;400;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blood-red: #8B0000;
+            --void-black: #050505;
+            --caged-gold: #C5A059;
+            --ghost-white: #F0F0F0;
+        }
+
+        body {
+            background-color: var(--void-black);
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Noto Serif SC', serif;
+            color: var(--ghost-white);
+        }
+
+        .ko-text { font-family: 'Nanum Myeongjo', serif; }
+        .font-ui { font-family: 'Cinzel', serif; }
+        
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border: 0.5px solid rgba(197, 160, 89, 0.2);
+        }
+        
+        .dreamy-panel { 
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(197, 160, 89, 0.08), rgba(10, 10, 10, 0.96)); 
+            backdrop-filter: blur(30px); 
+            border: 1px solid rgba(197, 160, 89, 0.25); 
+        }
+
+        /* 动画 */
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-10px); }
+          75% { transform: translateX(10px); }
+        }
+        .animate-shake { animation: shake 0.2s ease-in-out 0s 2; }
+
+        .mode-transition-enter { opacity: 0; transform: translateY(10px); }
+        .mode-transition-enter-active { opacity: 1; transform: translateY(0); transition: all 500ms ease; }
+
+        .btn-requiem {
+            background: linear-gradient(135deg, #1a1a1a, #000);
+            border: 1px solid var(--caged-gold);
+            color: var(--caged-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.4s;
+        }
+        .btn-requiem:hover {
+            background: var(--caged-gold);
+            color: var(--void-black);
+        }
+
+        @keyframes pulse-gold {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+        .pulse-border { animation: pulse-gold 4s infinite; }
+
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 0.6; border-width: 1px; }
+            100% { transform: scale(4); opacity: 0; border-width: 0.1px; }
+        }
+        .animate-ripple {
+            animation: ripple 6s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @keyframes rotate-record { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } 
+        .rotate-record-logic { animation: rotate-record 8s linear infinite; } 
+
+        @keyframes brainwave-glow { 
+            0%, 100% { border-color: rgba(245, 158, 11, 0.2); box-shadow: 0 0 15px rgba(245, 158, 11, 0.1), inset 0 0 10px rgba(245, 158, 11, 0.05); } 
+            50% { border-color: rgba(245, 158, 11, 0.9); box-shadow: 0 0 40px rgba(245, 158, 11, 0.4), inset 0 0 20px rgba(245, 158, 11, 0.15); } 
+        } 
+        .animate-brainwave { animation: brainwave-glow 4s infinite; }
+
+        @keyframes lyric-fill { 0% { clip-path: inset(0 100% 0 0); } 100% { clip-path: inset(0 0% 0 0); } } 
+        @keyframes lyric-container-out { 0% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: translateX(-20px); } }
+
+        /* UI Config Card Stack */
+        .resonance-stack-container { 
+            display: flex; 
+            transform-style: preserve-3d; 
+            transform: perspective(1000px); 
+            padding: 20px 40px; 
+            overflow-x: auto; 
+            scroll-behavior: smooth; 
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
+        } 
+        .resonance-stack-container::-webkit-scrollbar { display: none; } 
+        .resonance-card { 
+            position: relative; 
+            flex-shrink: 0; 
+            width: 60px; 
+            height: 84px; 
+            border-radius: 6px; 
+            background-size: cover; 
+            background-position: center; 
+            border: 1.5px solid rgba(197, 160, 89, 0.2); 
+            transition: all 400ms cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            cursor: pointer; 
+            margin-right: -15px; 
+            box-shadow: -10px 0 20px rgba(0,0,0,0.5); 
+            scroll-snap-align: center;
+        } 
+        .resonance-card:hover { 
+            transform: translateY(-10px) scale(1.4) translateZ(50px); 
+            z-index: 100; 
+            border-color: #C5A059; 
+            margin-right: 15px; 
+            margin-left: 15px; 
+        } 
+        .resonance-card.active { 
+            border-color: #C5A059; 
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.6); 
+            transform: translateY(-5px) scale(1.1); 
+            z-index: 10; 
+        } 
+        .custom-card-label { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            background: #C5A059; 
+            color: black; 
+            font-size: 6px; 
+            padding: 1px 3px; 
+            font-weight: bold; 
+            border-radius: 0 0 4px 0; 
+            pointer-events: none; 
+            text-transform: uppercase; 
+        } 
+        .delete-btn { 
+            position: absolute; 
+            top: -8px; 
+            right: -8px; 
+            width: 18px; 
+            height: 18px; 
+            background: #8B0000; 
+            color: white; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 12px; 
+            opacity: 0; 
+            transition: opacity 0.2s; 
+            border: 1px solid rgba(255,255,255,0.2); 
+            z-index: 50; 
+        } 
+        .resonance-card:hover .delete-btn { opacity: 1; } 
+
+        .nickname-input { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: none; 
+            border-bottom: 1px solid rgba(197, 160, 89, 0.3); 
+            color: white; 
+            font-size: 12px; 
+            padding: 8px 4px; 
+            width: 100%; 
+            outline: none; 
+            transition: all 0.3s; 
+            letter-spacing: 0.1em; 
+        } 
+        .nickname-input:focus { border-bottom-color: #C5A059; background: rgba(255, 255, 255, 0.05); }
+
+        input[type='range']::-webkit-slider-thumb { 
+            -webkit-appearance: none; 
+            width: 10px; 
+            height: 10px; 
+            background: #C5A059; 
+            border: 1.5px solid #000; 
+            border-radius: 50%; 
+            cursor: pointer; 
+        }
+
+        /* 简约风格竖向滚动条 */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(197, 160, 89, 0.3);
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(197, 160, 89, 0.5);
+        }
+        ::-webkit-scrollbar-thumb:active {
+            background: rgba(197, 160, 89, 0.7);
+        }
+
+        /* Firefox滚动条 */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(197, 160, 89, 0.3) transparent;
+        }
+    </style>
+
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0"
+  }
+}
+</script>
+  <script type="module" crossorigin src="./assets/index-CgpCxYgx.js"></script>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div id="root"></div>
+</body>
+</html>
